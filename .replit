@@ -30,3 +30,8 @@ externalPort = 8081
 [[ports]]
 localPort = 23291
 externalPort = 80
+
+[userenv]
+
+[userenv.shared]
+VITE_NFT_CONTRACT_ADDRESS = "0x7e1e63780f5459c4e49bb3ad9e5406f7011c0b00"
