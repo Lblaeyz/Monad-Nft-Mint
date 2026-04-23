@@ -13,7 +13,6 @@ import { NFT_ABI, NFT_CONTRACT_ADDRESS } from "@/lib/wagmi";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import MintSuccessDialog from "@/components/MintSuccessDialog";
-import MyMintsGallery from "@/components/MyMintsGallery";
 
 const ZERO = "0x0000000000000000000000000000000000000000";
 const isContractConfigured = NFT_CONTRACT_ADDRESS.toLowerCase() !== ZERO;
@@ -305,8 +304,6 @@ export default function Mint() {
           </p>
         </section>
       </main>
-
-      <MyMintsGallery />
 
       <footer className="border-t border-border mt-10">
         <div className="max-w-6xl mx-auto px-6 py-6 text-xs text-muted-foreground flex flex-col md:flex-row items-center justify-between gap-2">
