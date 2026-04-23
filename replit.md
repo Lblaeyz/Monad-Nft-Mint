@@ -2,26 +2,33 @@
 
 ## Overview
 
-pnpm workspace monorepo using TypeScript. Each package manages its own dependencies.
+Monad NFT minting app — a React + Vite frontend that connects wallets via RainbowKit/Wagmi and mints from an ERC-721 contract on Monad Testnet (chainId 10143).
 
 ## Stack
 
 - **Monorepo tool**: pnpm workspaces
-- **Node.js version**: 24
-- **Package manager**: pnpm
-- **TypeScript version**: 5.9
-- **API framework**: Express 5
-- **Database**: PostgreSQL + Drizzle ORM
-- **Validation**: Zod (`zod/v4`), `drizzle-zod`
-- **API codegen**: Orval (from OpenAPI spec)
-- **Build**: esbuild (CJS bundle)
+- **Frontend**: React + Vite + Tailwind v4 + shadcn-style UI
+- **Web3**: wagmi v2 + viem + RainbowKit + @tanstack/react-query
+- **Chain**: Monad Testnet (10143) via `https://testnet-rpc.monad.xyz`
+- **Smart contract**: `contracts/MonadNFT.sol` (ERC-721 on top of OpenZeppelin)
+
+## Configuration
+
+The mint UI reads two optional env vars (Vite-prefixed):
+
+- `VITE_NFT_CONTRACT_ADDRESS` — the deployed `MonadNFT` address. Until set, the UI shows a "contract not configured" notice.
+- `VITE_WALLETCONNECT_PROJECT_ID` — optional Reown/WalletConnect project ID; without it the WalletConnect QR flow falls back to defaults.
+
+## Deploying the contract
+
+1. `forge init monad-nft && cd monad-nft`
+2. `forge install OpenZeppelin/openzeppelin-contracts`
+3. Copy `contracts/MonadNFT.sol` into `src/`
+4. `forge create src/MonadNFT.sol:MonadNFT --rpc-url https://testnet-rpc.monad.xyz --private-key $PRIVATE_KEY --constructor-args "Monad Genesis" "MGEN" "ipfs://YOUR_BASE_URI/" 5000 10000000000000000`
+5. Set `VITE_NFT_CONTRACT_ADDRESS` to the printed address.
 
 ## Key Commands
 
-- `pnpm run typecheck` — full typecheck across all packages
-- `pnpm run build` — typecheck + build all packages
-- `pnpm --filter @workspace/api-spec run codegen` — regenerate API hooks and Zod schemas from OpenAPI spec
-- `pnpm --filter @workspace/db run push` — push DB schema changes (dev only)
-- `pnpm --filter @workspace/api-server run dev` — run API server locally
-
-See the `pnpm-workspace` skill for workspace structure, TypeScript setup, and package details.
+- `pnpm --filter @workspace/nft-mint run dev` — run the mint frontend
+- `pnpm run typecheck` — full typecheck
+- `pnpm run build` — build all packages
