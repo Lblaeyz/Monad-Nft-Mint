@@ -12,6 +12,8 @@ import { monadTestnet } from "wagmi/chains";
 import { NFT_ABI, NFT_CONTRACT_ADDRESS } from "@/lib/wagmi";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
+import MintSuccessDialog from "@/components/MintSuccessDialog";
+import MyMintsGallery from "@/components/MyMintsGallery";
 
 const ZERO = "0x0000000000000000000000000000000000000000";
 const isContractConfigured = NFT_CONTRACT_ADDRESS.toLowerCase() !== ZERO;
@@ -20,6 +22,8 @@ export default function Mint() {
   const { address, isConnected, chainId } = useAccount();
   const { toast } = useToast();
   const [imgError, setImgError] = useState(false);
+  const [successOpen, setSuccessOpen] = useState(false);
+  const [successHash, setSuccessHash] = useState<string | null>(null);
 
   const wrongNetwork = isConnected && chainId !== monadTestnet.id;
 
@@ -81,16 +85,14 @@ export default function Mint() {
   } = useWaitForTransactionReceipt({ hash: txHash });
 
   useEffect(() => {
-    if (isSuccess) {
-      toast({
-        title: "Minted!",
-        description: "Your NFT is on its way to your wallet.",
-      });
+    if (isSuccess && txHash) {
+      setSuccessHash(txHash);
+      setSuccessOpen(true);
       refetchInfo();
       refetchBalance();
       reset();
     }
-  }, [isSuccess, toast, refetchInfo, refetchBalance, reset]);
+  }, [isSuccess, txHash, refetchInfo, refetchBalance, reset]);
 
   useEffect(() => {
     const err = writeError || confirmError;
@@ -117,6 +119,7 @@ export default function Mint() {
   const isBusy = isWriting || isConfirming;
 
   return (
+    <>
     <div className="min-h-screen w-full bg-background text-foreground">
       <header className="border-b border-border">
         <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
@@ -303,6 +306,8 @@ export default function Mint() {
         </section>
       </main>
 
+      <MyMintsGallery />
+
       <footer className="border-t border-border mt-10">
         <div className="max-w-6xl mx-auto px-6 py-6 text-xs text-muted-foreground flex flex-col md:flex-row items-center justify-between gap-2">
           <span>Built on Monad. Smart contract: ERC-721 (OpenZeppelin).</span>
@@ -312,6 +317,13 @@ export default function Mint() {
         </div>
       </footer>
     </div>
+
+    <MintSuccessDialog
+      open={successOpen}
+      txHash={successHash}
+      onClose={() => setSuccessOpen(false)}
+    />
+    </>
   );
 }
 

@@ -12,6 +12,14 @@ Monad NFT minting app — a React + Vite frontend that connects wallets via Rain
 - **Chain**: Monad Testnet (10143) via `https://testnet-rpc.monad.xyz`
 - **Smart contract**: `contracts/MonadNFT.sol` (ERC-721 on top of OpenZeppelin)
 
+## Features
+
+- Wallet connect (RainbowKit) with auto-prompt to switch to Monad Testnet
+- Live mint price / minted / remaining stats and progress bar
+- Mint button calling `mint()` payable with the on-chain `mintPrice`
+- Success modal with thumbs-up image, transaction hash linked to Monadscan, and X close button
+- "My Mints" gallery scanning past `Minted` events for the connected wallet, then resolving each token's metadata image (supports `ipfs://`, `http(s)://`, and `data:` URIs)
+
 ## Configuration
 
 The mint UI reads two optional env vars (Vite-prefixed):
