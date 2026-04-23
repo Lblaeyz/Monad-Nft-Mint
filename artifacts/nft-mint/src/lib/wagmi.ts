@@ -64,6 +64,13 @@ export const NFT_ABI = [
     type: "function",
   },
   {
+    inputs: [],
+    name: "maxPerWallet",
+    outputs: [{ name: "", type: "uint256" }],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
     inputs: [{ name: "owner", type: "address" }],
     name: "balanceOf",
     outputs: [{ name: "", type: "uint256" }],

@@ -34,4 +34,4 @@ externalPort = 80
 [userenv]
 
 [userenv.shared]
-VITE_NFT_CONTRACT_ADDRESS = "0x7e1e63780f5459c4e49bb3ad9e5406f7011c0b00"
+VITE_NFT_CONTRACT_ADDRESS = "0xadb550b9137e67ff2ef756d8ea02db776b51fe81"

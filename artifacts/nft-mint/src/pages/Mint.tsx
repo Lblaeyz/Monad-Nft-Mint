@@ -33,6 +33,7 @@ export default function Mint() {
       { address: NFT_CONTRACT_ADDRESS, abi: NFT_ABI, functionName: "mintPrice" },
       { address: NFT_CONTRACT_ADDRESS, abi: NFT_ABI, functionName: "maxSupply" },
       { address: NFT_CONTRACT_ADDRESS, abi: NFT_ABI, functionName: "totalMinted" },
+      { address: NFT_CONTRACT_ADDRESS, abi: NFT_ABI, functionName: "maxPerWallet" },
     ],
     query: { enabled: isContractConfigured },
   });
@@ -50,6 +51,17 @@ export default function Mint() {
   const mintPrice = contractInfo?.[2]?.result as bigint | undefined;
   const maxSupply = contractInfo?.[3]?.result as bigint | undefined;
   const totalMinted = contractInfo?.[4]?.result as bigint | undefined;
+  const maxPerWallet = contractInfo?.[5]?.result as bigint | undefined;
+
+  const walletBalance = (balance as bigint | undefined) ?? 0n;
+  const walletRemaining =
+    typeof maxPerWallet === "bigint"
+      ? maxPerWallet > walletBalance
+        ? maxPerWallet - walletBalance
+        : 0n
+      : null;
+  const walletLimitReached =
+    typeof maxPerWallet === "bigint" && walletBalance >= maxPerWallet;
 
   const soldOut =
     typeof maxSupply === "bigint" &&
@@ -221,6 +233,22 @@ export default function Mint() {
               </div>
             </div>
 
+            {isConnected && typeof maxPerWallet === "bigint" && (
+              <div className="rounded-lg border border-border bg-muted/40 px-4 py-3 flex items-center justify-between text-sm">
+                <span className="text-muted-foreground">
+                  Per-wallet limit
+                </span>
+                <span className="font-mono font-semibold">
+                  {walletBalance.toString()} / {maxPerWallet.toString()} minted
+                  <span
+                    className={`ml-2 ${walletLimitReached ? "text-destructive" : "text-primary"}`}
+                  >
+                    ({walletRemaining?.toString() ?? "—"} left)
+                  </span>
+                </span>
+              </div>
+            )}
+
             {!isContractConfigured ? (
               <ConfigNotice />
             ) : !isConnected ? (
@@ -256,6 +284,10 @@ export default function Mint() {
             ) : soldOut ? (
               <Button size="lg" className="w-full" disabled>
                 Sold Out
+              </Button>
+            ) : walletLimitReached ? (
+              <Button size="lg" className="w-full" disabled>
+                Wallet limit reached ({maxPerWallet?.toString()})
               </Button>
             ) : (
               <Button

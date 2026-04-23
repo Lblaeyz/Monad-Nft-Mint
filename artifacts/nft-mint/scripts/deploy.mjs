@@ -25,6 +25,7 @@ const MAX_SUPPLY = BigInt(process.env.NFT_MAX_SUPPLY || "10000");
 const MINT_PRICE = process.env.NFT_MINT_PRICE_ETHER
   ? parseEther(process.env.NFT_MINT_PRICE_ETHER)
   : parseEther("0.01");
+const MAX_PER_WALLET = BigInt(process.env.NFT_MAX_PER_WALLET || "20");
 
 const PRIVATE_KEY = process.env.DEPLOYER_PRIVATE_KEY;
 if (!PRIVATE_KEY) {
@@ -90,12 +91,13 @@ console.log(`  symbol      = ${SYMBOL}`);
 console.log(`  baseURI     = ${BASE_URI}`);
 console.log(`  maxSupply   = ${MAX_SUPPLY}`);
 console.log(`  mintPrice   = ${formatEther(MINT_PRICE)} MON`);
+console.log(`  maxPerWallet= ${MAX_PER_WALLET}`);
 
 console.log("\nDeploying...");
 const hash = await walletClient.deployContract({
   abi,
   bytecode,
-  args: [NAME, SYMBOL, BASE_URI, MAX_SUPPLY, MINT_PRICE],
+  args: [NAME, SYMBOL, BASE_URI, MAX_SUPPLY, MINT_PRICE, MAX_PER_WALLET],
 });
 console.log(`Tx hash: ${hash}`);
 console.log("Waiting for confirmation...");

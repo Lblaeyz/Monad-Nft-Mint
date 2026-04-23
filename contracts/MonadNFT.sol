@@ -21,6 +21,7 @@ contract MonadNFT is ERC721, Ownable {
     uint256 public nextTokenId;
     uint256 public maxSupply;
     uint256 public mintPrice;
+    uint256 public maxPerWallet;
     string private _baseTokenURI;
 
     event Minted(address indexed to, uint256 indexed tokenId);
@@ -30,20 +31,27 @@ contract MonadNFT is ERC721, Ownable {
         string memory symbol_,
         string memory baseURI_,
         uint256 maxSupply_,
-        uint256 mintPrice_
+        uint256 mintPrice_,
+        uint256 maxPerWallet_
     ) ERC721(name_, symbol_) Ownable(msg.sender) {
         _baseTokenURI = baseURI_;
         maxSupply = maxSupply_;
         mintPrice = mintPrice_;
+        maxPerWallet = maxPerWallet_;
     }
 
     function mint() external payable {
         require(nextTokenId < maxSupply, "Sold out");
         require(msg.value >= mintPrice, "Insufficient MON");
+        require(balanceOf(msg.sender) < maxPerWallet, "Wallet limit reached");
         uint256 tokenId = nextTokenId;
         nextTokenId += 1;
         _safeMint(msg.sender, tokenId);
         emit Minted(msg.sender, tokenId);
+    }
+
+    function setMaxPerWallet(uint256 newMax) external onlyOwner {
+        maxPerWallet = newMax;
     }
 
     function totalMinted() external view returns (uint256) {
